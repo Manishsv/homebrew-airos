@@ -26,6 +26,12 @@ class AirosCli < Formula
   # `airos chat` extras (anthropic, openai) are intentionally NOT bundled: their
   # tree needs a Rust toolchain (tokenizers) that won't build in the sandbox.
   # For full chat, use the pipx install in packaging/homebrew/README.md instead.
+  #
+  # NOTE: h3 is deliberately omitted. It's a hard dep in pyproject.toml but is
+  # only imported by airos/chat/tools/* (the excluded chat feature); the core
+  # CLI never touches it. h3 3.x also vendors a C library that must be compiled
+  # (slow, needs cmake) — dropping it keeps this an all-pure-Python, fast,
+  # offline install. The main package installs --no-deps, so its absence is fine.
   resource "click" do
     url "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz"
     sha256 "ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"
@@ -39,11 +45,6 @@ class AirosCli < Formula
   resource "PyYAML" do
     url "https://files.pythonhosted.org/packages/54/ed/79a089b6be93607fa5cdaedf301d7dfb23af5f25c398d5ead2525b063e17/pyyaml-6.0.2.tar.gz"
     sha256 "d584d9ec91ad65861cc08d42e834324ef890a082e591037abe114850ff7bbc3e"
-  end
-
-  resource "h3" do
-    url "https://files.pythonhosted.org/packages/8f/8d/b10085f4f6ef7d4cb126a2e0eaf9e907e89cf99965b6578a3d1666f1435e/h3-3.7.7.tar.gz"
-    sha256 "33d141c3cef0725a881771fd8cb80c06a0db84a6e4ca5c647ce095ae07c61e94"
   end
 
   # requests transitive deps:
@@ -68,10 +69,6 @@ class AirosCli < Formula
   end
 
   def install
-    # h3 3.x vendors an old C library whose CMakeLists declares
-    # cmake_minimum_required < 3.5, which CMake 4.x refuses. This env lets the
-    # bundled build configure anyway (equivalent to -DCMAKE_POLICY_VERSION_MINIMUM=3.5).
-    ENV["CMAKE_POLICY_VERSION_MINIMUM"] = "3.5"
     virtualenv_install_with_resources
   end
 
