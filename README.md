@@ -66,17 +66,19 @@ Run `airos --help` for the full command set.
 
 ## `airos chat` (AI chat) — use pipx, not Homebrew
 
-The Homebrew build omits the AI-chat extras (`anthropic`/`openai`) because their
-`tokenizers` dependency needs a Rust toolchain that won't build in Homebrew's
-sandbox, so `airos chat` is **not** available from this tap. For chat, install
-with pipx instead:
+The Homebrew build omits the AI-chat extras (`anthropic`, `openai`, `h3`) to
+keep it a lightweight, all-pure-Python install, so `airos chat` is **not**
+available from this tap. For chat, install with pipx from the public release
+(no repo access needed):
 
 ```bash
 brew install pipx
-pipx install "airos[chat] @ git+https://github.com/Manishsv/AirOS#subdirectory=cli"
+pipx install "airos[chat] @ https://github.com/Manishsv/homebrew-airos/releases/latest/download/airos.tar.gz"
 ```
 
-(Requires read access to the AirOS repository.)
+This is the same CLI plus the AI extras, resolved from PyPI (pipx isn't
+sandboxed). It installs its own `airos`; if you also have the Homebrew one,
+whichever is earlier in `PATH` wins — for chat, prefer the pipx install.
 
 ## Upgrading
 
