@@ -60,13 +60,18 @@ info "installing airos + chat dependencies (anthropic/openai/h3 — ~1 min)..."
 "${VENV_DIR}/bin/python" -m pip install --quiet "${SPEC}" || die "install failed. Check your network and try again."
 ok "installed $("${VENV_DIR}/bin/airos" --version 2>/dev/null || echo 'airos')"
 
-# --- 3. remove a conflicting Homebrew base build ---------------------------
-# This installer ships the full CLI (base + chat), so a separate `brew` base
-# build is redundant and would fight us for /opt/homebrew/bin/airos.
+# --- 3. remove conflicting installs (this build supersedes them) -----------
+# A separate Homebrew base build or a pipx-installed `airos` would fight for the
+# command name / shadow this one, so clear them for a single, unambiguous `airos`.
 if command -v brew >/dev/null 2>&1 && brew list --versions airos-cli >/dev/null 2>&1; then
   info "removing the Homebrew base build (this install includes it, plus chat)..."
   brew uninstall airos-cli >/dev/null 2>&1 || true
   ok "removed Homebrew airos-cli"
+fi
+if command -v pipx >/dev/null 2>&1 && pipx list --short 2>/dev/null | grep -qi '^airos '; then
+  info "removing a previous pipx 'airos' (superseded by this install)..."
+  pipx uninstall airos >/dev/null 2>&1 || true
+  ok "removed pipx airos"
 fi
 
 # --- 4. symlink `airos` into a dir already on PATH -------------------------
