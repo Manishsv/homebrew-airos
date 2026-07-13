@@ -5,15 +5,28 @@ AirOS Sustainable Cities platform (AI CoE, IIT Kanpur).
 
 ## Install
 
+### Recommended — one command (full CLI, includes AI chat)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Manishsv/homebrew-airos/main/install.sh | sh
+```
+
+Installs the complete CLI **including `airos chat`**, puts `airos` on your PATH,
+and needs no access to the private repo. Re-run any time to upgrade; uninstall
+with `curl -fsSL .../install.sh | sh -s -- --uninstall`.
+
+### Alternative — Homebrew (data explorer only, no chat)
+
 ```bash
 brew tap manishsv/airos
 brew install airos-cli
 ```
 
-This installs the `airos` command. By default it talks to the hosted AirOS
-deployment through the Kong gateway — no configuration required.
+Lighter and familiar, but **without** `airos chat` (its AI dependencies can't
+build in Homebrew's sandbox). Use the one-liner above if you want chat.
 
-Check the connection:
+Either way, `airos` talks to the hosted AirOS deployment through the Kong
+gateway out of the box — no configuration required. Check it:
 
 ```bash
 airos ping
@@ -64,28 +77,24 @@ airos export cell.roads roads.csv
 
 Run `airos --help` for the full command set.
 
-## `airos chat` (AI chat) — use pipx, not Homebrew
+## `airos chat` (AI chat)
 
-The Homebrew build omits the AI-chat extras (`anthropic`, `openai`, `h3`) to
-keep it a lightweight, all-pure-Python install, so `airos chat` is **not**
-available from this tap. For chat, install with pipx from the public release
-(no repo access needed):
+The Homebrew build is data-explorer only — `airos chat` isn't included (its AI
+dependencies can't build in Homebrew's sandbox). To get chat, use the one-line
+installer at the top of this page:
 
 ```bash
-brew install pipx
-pipx install "airos[chat] @ https://github.com/Manishsv/homebrew-airos/releases/latest/download/airos.tar.gz"
+curl -fsSL https://raw.githubusercontent.com/Manishsv/homebrew-airos/main/install.sh | sh
 ```
 
-This is the same CLI plus the AI extras, resolved from PyPI (pipx isn't
-sandboxed). It installs its own `airos`; if you also have the Homebrew one,
-whichever is earlier in `PATH` wins — for chat, prefer the pipx install.
+It installs the full CLI (base + chat) into an isolated venv, puts `airos` on
+your PATH, and removes the Homebrew base build so you end up with a single
+`airos` that does everything. Then `airos chat` just works.
 
 ## Upgrading
 
-```bash
-brew update
-brew upgrade airos-cli
-```
+- **Installed via the one-liner:** re-run it — `curl -fsSL …/install.sh | sh`.
+- **Installed via Homebrew (base only):** `brew update && brew upgrade airos-cli`.
 
 ## For maintainers
 
