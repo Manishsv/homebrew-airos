@@ -7,7 +7,7 @@
 class AirosCli < Formula
   include Language::Python::Virtualenv
 
-  desc "AirOS CLI — data explorer & AI chat for Sustainable Cities (IIT Kanpur)"
+  desc "Data explorer and AI chat for AirOS Sustainable Cities (IIT Kanpur)"
   homepage "https://github.com/Manishsv/AirOS"
   # Released sdist of the cli/ package (python -m build), hosted on the PUBLIC
   # tap repo so `brew install` can fetch it without auth (the AirOS source repo
@@ -68,6 +68,10 @@ class AirosCli < Formula
   end
 
   def install
+    # h3 3.x vendors an old C library whose CMakeLists declares
+    # cmake_minimum_required < 3.5, which CMake 4.x refuses. This env lets the
+    # bundled build configure anyway (equivalent to -DCMAKE_POLICY_VERSION_MINIMUM=3.5).
+    ENV["CMAKE_POLICY_VERSION_MINIMUM"] = "3.5"
     virtualenv_install_with_resources
   end
 
