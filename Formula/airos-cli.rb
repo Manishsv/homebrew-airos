@@ -7,7 +7,7 @@
 class AirosCli < Formula
   include Language::Python::Virtualenv
 
-  desc "AI-enabled operating system for cities (IIT Kanpur)"
+  desc "AI-enabled operating system for cities"
   homepage "https://github.com/Manishsv/AirOS"
   # Released sdist of the cli/ package (python -m build), hosted on the PUBLIC
   # tap repo so `brew install` can fetch it without auth (the AirOS source repo
