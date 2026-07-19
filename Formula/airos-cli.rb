@@ -12,8 +12,8 @@ class AirosCli < Formula
   # Released sdist of the cli/ package (python -m build), hosted on the PUBLIC
   # tap repo so `brew install` can fetch it without auth (the AirOS source repo
   # is private). Update version + sha256 each release via publish.sh.
-  url "https://github.com/Manishsv/homebrew-airos/releases/download/cli-v0.1.24/airos-0.1.24.tar.gz"
-  sha256 "f7f84f8e932500d711ee0f21e5c65a1c91a4727de1c73f752cb0abef2978dbcd"
+  url "https://github.com/Manishsv/homebrew-airos/releases/download/cli-v0.1.25/airos-0.1.25.tar.gz"
+  sha256 "488c4927f74c5f9555f7f3ac28dcf38403e966c829686792b3634933bbc31177"
   license "MIT"
 
   depends_on "python@3.12"
