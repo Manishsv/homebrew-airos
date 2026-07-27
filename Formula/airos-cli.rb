@@ -12,26 +12,29 @@ class AirosCli < Formula
   # Released sdist of the cli/ package (python -m build), hosted on the PUBLIC
   # tap repo so `brew install` can fetch it without auth (the AirOS source repo
   # is private). Update version + sha256 each release via publish.sh.
-  url "https://github.com/Manishsv/homebrew-airos/releases/download/cli-v0.1.28/airos-0.1.28.tar.gz"
-  sha256 "21d8d0ef7a2e85e2b643ee5d6d9385cacc67f17cc89ff8558e5ad2c223df9ad2"
+  url "https://github.com/Manishsv/homebrew-airos/releases/download/cli-v0.1.29/airos-0.1.29.tar.gz"
+  sha256 "81d8273fcf5388517f5a6264e63f219228feb0463a9420b00598826e2960deaf"
   license "MIT"
 
   depends_on "python@3.12"
 
   # --- Python dependency resources -----------------------------------------
-  # Direct + transitive deps of the BASE CLI (auth, registry, data explorer),
-  # pinned to PyPI sdists. All pure-Python — they build in brew's offline venv.
-  # Regenerate on a dep bump with:
+  # Direct + transitive deps of the CLI (auth, registry, data explorer, AND chat/
+  # agents), pinned to PyPI sdists — all pure-Python, so `brew install` builds
+  # OFFLINE with no compiler or network. Regenerate on a dep bump with:
   #     brew update-python-resources Formula/airos-cli.rb
-  # `airos chat` extras (anthropic, openai) are intentionally NOT bundled: their
-  # tree needs a Rust toolchain (tokenizers) that won't build in the sandbox.
-  # For full chat, use the pipx install in packaging/homebrew/README.md instead.
   #
-  # NOTE: h3 is deliberately omitted. It's a hard dep in pyproject.toml but is
-  # only imported by airos/chat/tools/* (the excluded chat feature); the core
-  # CLI never touches it. h3 3.x also vendors a C library that must be compiled
-  # (slow, needs cmake) — dropping it keeps this an all-pure-Python, fast,
-  # offline install. The main package installs --no-deps, so its absence is fine.
+  # Chat works in this build: the LLM providers talk to /chat/completions over
+  # `requests` (already here), so the openai/anthropic SDKs — and their Rust deps
+  # (pydantic-core, jiter, tokenizers) that would not build in the sandbox — are gone.
+  #
+  # NOT bundled: h3 (chat geo/location tools) — a C library needing an offline
+  # cmake/scikit-build-core build that would complicate this pure-Python formula.
+  # Chat still loads without it (h3 imports lazily); the geo/location tools print
+  # "pip install h3" if used. For the full geo tools, install via pipx/curl (they
+  # resolve h3 from a wheel — see README.md), or add h3 to brew later: re-add a
+  # `resource "h3"` + `depends_on "cmake"/"ninja" => :build`, run
+  # `brew update-python-resources`, then `brew install --build-from-source`.
   resource "click" do
     url "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz"
     sha256 "ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"
@@ -74,5 +77,8 @@ class AirosCli < Formula
 
   test do
     assert_match "airos", shell_output("#{bin}/airos --help")
+    # Chat is bundled now (SDK-free); the command should be registered, not the
+    # "not available in this installation" stub.
+    assert_match "chat", shell_output("#{bin}/airos --help")
   end
 end
